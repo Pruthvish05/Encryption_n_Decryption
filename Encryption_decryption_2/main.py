@@ -1,7 +1,8 @@
 import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
+from cryptography.fernet import Fernet
+import base64
 #just a simple CLI menu
 def encryption():
     print("Encryption selected")
@@ -29,6 +30,14 @@ def encryption():
     # Here we would add our encryption code
     print("salt", salt.hex())
     print("key", key.hex())
+    fernet_key = base64.urlsafe_b64encode(key)
+    fernet = Fernet(fernet_key)
+    encrypted_data = fernet.encrypt(data)
+    os.makedirs("encrypted_files", exist_ok=True)
+    encrypted_file_path = os.path.join("encrypted_files", file_name + ".enc")
+    with open(encrypted_file_path, 'wb') as encrypted_file:
+        encrypted_file.write(encrypted_data)
+    print(f"File encrypted successfully and saved to {encrypted_file_path}")
 def decryption():
     print("Decryption selected")
     # Here we would add our decryption code
