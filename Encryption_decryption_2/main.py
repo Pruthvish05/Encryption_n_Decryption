@@ -1,5 +1,6 @@
 import os
-
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 #just a simple CLI menu
 def encryption():
@@ -14,6 +15,20 @@ def encryption():
     print(f"file loaded successfully")
     print(f"File-name: {file_name}")
     print(f"File-size: {len(data)} bytes")
+    password = input("Enter a password for encryption: ")
+    password_bytes = password.encode()
+    salt= os.urandom(16)
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = kdf.derive(password_bytes)
+    print(f"Encryption key derived successfully")
+    # Here we would add our encryption code
+    print("salt", salt.hex())
+    print("key", key.hex())
 def decryption():
     print("Decryption selected")
     # Here we would add our decryption code
