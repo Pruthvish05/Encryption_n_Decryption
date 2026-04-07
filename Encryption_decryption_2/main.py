@@ -1,7 +1,19 @@
+import os
+
+
 #just a simple CLI menu
 def encryption():
     print("Encryption selected")
-    # Here we would add our encryption code
+    file_path = input("Enter the file path to encrypt: ")
+    if not os.path.isfile(file_path):
+        print("File does not exist. Please try again.")
+        return
+    file_name = os.path.basename(file_path)
+    with open(file_path, 'rb') as file:
+        data = file.read()
+    print(f"file loaded successfully")
+    print(f"File-name: {file_name}")
+    print(f"File-size: {len(data)} bytes")
 def decryption():
     print("Decryption selected")
     # Here we would add our decryption code
