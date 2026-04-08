@@ -4,5 +4,10 @@
         "path": "encrypted_files\\example.txt.enc",
         "salt": "8a9e7b5f923976ab7da90aa6ca86f9e3",
         "key": "0310408bfd13cf80013dedbaf7c73f6a043b91c7bba3861b03c39f0c64c212c4"
+    },
+    "example_2.txt.enc": {
+        "original_name": "example_2.txt",
+        "path": "encrypted_files\\example_2.txt.enc",
+        "salt": "7d54822fb29bb86822a70fe76f399193"
     }
 }

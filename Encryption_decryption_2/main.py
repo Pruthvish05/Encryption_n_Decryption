@@ -68,10 +68,16 @@ def encryption():
     }
     with open("registry.json", 'w') as registry_file:
         json.dump(registry, registry_file, indent=4)
-
+    print("Do you wanna delete the original file? (yes/no)")
+    delete_original = input().lower()
+    if delete_original == "yes":
+        os.remove(file_path)
+        print("Original file deleted.")
 def decryption():
     print("Decryption selected")
     # Here we would add our decryption code
+    #now we will
+    
 def menu():
     print("Welcome to the Encryption/Decryption Tool")
     print("1. Encrypt a message")
