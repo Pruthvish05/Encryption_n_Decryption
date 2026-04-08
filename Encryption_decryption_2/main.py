@@ -3,7 +3,11 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
 import base64
+import json
 #just a simple CLI menu
+#not simple anymore lol
+#need to add error handling and edge cases
+#need to add creating a folder for this and registry .json file
 def encryption():
     print("Encryption selected")
     file_path = input("Enter the file path to encrypt: ")
@@ -38,6 +42,31 @@ def encryption():
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
     print(f"File encrypted successfully and saved to {encrypted_file_path}")
+    # if not os.path.isfile("registry.json"):
+    #     with open("registry.json", 'w') as registry_file:
+    #         json.dump({}, registry_file)
+    # with open("registry.json", 'r') as registry_file:
+    #     registry = json.load(registry_file)
+    # registry[file_name] = {
+    #     "path": encrypted_file_path,
+    #     "salt": salt.hex(),
+    #     "key": key.hex()
+    # }
+    # with open("registry.json", 'w') as registry_file:
+    #     json.dump(registry, registry_file)
+    if os.path.exists("registry.json"):
+        with open("registry.json", 'r') as registry_file:
+            registry = json.load(registry_file)
+    else:
+        registry = {}
+    registry[file_name + '.enc'] = {
+        "path": encrypted_file_path,
+        "salt": salt.hex(),
+        "key": key.hex()
+    }
+    with open("registry.json", 'w') as registry_file:
+        json.dump(registry, registry_file)
+
 def decryption():
     print("Decryption selected")
     # Here we would add our decryption code
