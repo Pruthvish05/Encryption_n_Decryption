@@ -27,7 +27,7 @@ def encryption():
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
-        iterations=100000,
+        iterations=200000,
     )
     key = kdf.derive(password_bytes)
     print(f"Encryption key derived successfully")
@@ -60,12 +60,14 @@ def encryption():
     else:
         registry = {}
     registry[file_name + '.enc'] = {
+        "original_name": file_name,
         "path": encrypted_file_path,
         "salt": salt.hex(),
-        "key": key.hex()
+        #"key": key.hex()
+        #we never store the key i just did that mistake which breaks the whole security my bad
     }
     with open("registry.json", 'w') as registry_file:
-        json.dump(registry, registry_file)
+        json.dump(registry, registry_file, indent=4)
 
 def decryption():
     print("Decryption selected")
