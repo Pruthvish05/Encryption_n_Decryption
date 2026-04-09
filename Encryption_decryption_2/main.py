@@ -77,7 +77,37 @@ def decryption():
     print("Decryption selected")
     # Here we would add our decryption code
     #now we will
-    
+    with open("registry.json", 'r') as registry_file:
+        registry = json.load(registry_file)
+    print("Available encrypted files:")
+    for index, file_name in enumerate(registry.keys(), start=1):
+        print(f"{index}. {file_name}")
+    choice = input("Enter the number of the file you want to decrypt: ")
+    selected_file = list(registry.keys())[int(choice) - 1]
+    file_info = registry[selected_file]
+    encrypted_file_path = file_info["path"]
+    salt = bytes.fromhex(file_info["salt"])
+    original_name = file_info["original_name"]
+    password = input("Enter the password for decryption: ")
+    password_bytes = password.encode()
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=200000,
+    )
+    key = kdf.derive(password_bytes)
+    fernet_key = base64.urlsafe_b64encode(key)
+    fernet = Fernet(fernet_key)
+    try:
+        decrypted_data = cipher.decrypt(encrypted_data)
+    except Exception as e:
+        print("Decryption failed. Incorrect password or corrupted file.")
+        return
+    output_file_path = os.path.join("decrypted_files", original_name)
+    os.makedirs("decrypted_files", exist_ok=True)
+    with open(output_file_path, 'wb') as output_file:
+        output_file.write(decrypted_data)
 def menu():
     print("Welcome to the Encryption/Decryption Tool")
     print("1. Encrypt a message")
