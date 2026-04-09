@@ -100,7 +100,7 @@ def decryption():
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     try:
-        decrypted_data = cipher.decrypt(encrypted_data)
+        decrypted_data = fernet.decrypt(open(encrypted_file_path, 'rb').read())
     except Exception as e:
         print("Decryption failed. Incorrect password or corrupted file.")
         return

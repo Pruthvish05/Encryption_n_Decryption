@@ -2,8 +2,7 @@
     "example.txt.enc": {
         "original_name": "example.txt",
         "path": "encrypted_files\\example.txt.enc",
-        "salt": "8a9e7b5f923976ab7da90aa6ca86f9e3",
-        "key": "0310408bfd13cf80013dedbaf7c73f6a043b91c7bba3861b03c39f0c64c212c4"
+        "salt": "daf7b73b6602d363815ac78a1c44b9c9"
     },
     "example_2.txt.enc": {
         "original_name": "example_2.txt",
