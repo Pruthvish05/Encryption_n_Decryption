@@ -77,13 +77,20 @@ def decryption():
     print("Decryption selected")
     # Here we would add our decryption code
     #now we will
+    if not os.path.isfile("registry.json"):
+        print("No encrypted files found. Please encrypt a file first.")
+        return
     with open("registry.json", 'r') as registry_file:
         registry = json.load(registry_file)
     print("Available encrypted files:")
     for index, file_name in enumerate(registry.keys(), start=1):
         print(f"{index}. {file_name}")
-    choice = input("Enter the number of the file you want to decrypt: ")
-    selected_file = list(registry.keys())[int(choice) - 1]
+    try:
+        choice = input("Enter the number of the file you want to decrypt: ")
+        selected_file = list(registry.keys())[int(choice) - 1]
+    except (ValueError, IndexError):
+        print("Invalid choice. Please try again.")
+        return
     file_info = registry[selected_file]
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
@@ -100,7 +107,9 @@ def decryption():
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     try:
-        decrypted_data = fernet.decrypt(open(encrypted_file_path, 'rb').read())
+        with open(encrypted_file_path, 'rb') as f:
+            enrypted_data = f.read()
+        decrypted_data = fernet.decrypt(encrypted_data)
     except Exception as e:
         print("Decryption failed. Incorrect password or corrupted file.")
         return
@@ -108,10 +117,12 @@ def decryption():
     os.makedirs("decrypted_files", exist_ok=True)
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
+    print(f"File decrypted successfully and saved to {output_file_path}")
+
 def menu():
     print("Welcome to the Encryption/Decryption Tool")
-    print("1. Encrypt a message")
-    print("2. Decrypt a message")
+    print("1. Encrypt a file")
+    print("2. Decrypt a file")
     print("3. Exit")
     choice = input("Enter your choice: ")
     if choice == "1":
@@ -122,4 +133,5 @@ def menu():
         print("Exiting...")
     else:
         print("Invalid choice. Please try again.")
-menu()
+while True:
+    menu()
