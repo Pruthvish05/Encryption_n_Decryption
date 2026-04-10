@@ -8,5 +8,10 @@
         "original_name": "example_2.txt",
         "path": "encrypted_files\\example_2.txt.enc",
         "salt": "7d54822fb29bb86822a70fe76f399193"
+    },
+    "example_3.txt.enc": {
+        "original_name": "example_3.txt",
+        "path": "encrypted_files\\example_3.txt_1775829618.enc",
+        "salt": "6e4ed98d941b450f6b2542707c8e32c9"
     }
 }

@@ -4,6 +4,8 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
 import base64
 import json
+import getpass
+import time
 #just a simple CLI menu
 #not simple anymore lol
 #need to add error handling and edge cases
@@ -20,7 +22,7 @@ def encryption():
     print(f"file loaded successfully")
     print(f"File-name: {file_name}")
     print(f"File-size: {len(data)} bytes")
-    password = input("Enter a password for encryption: ")
+    password = getpass.getpass("Enter a password for encryption: ")
     password_bytes = password.encode()
     salt= os.urandom(16)
     kdf = PBKDF2HMAC(
@@ -54,6 +56,9 @@ def encryption():
     # }
     # with open("registry.json", 'w') as registry_file:
     #     json.dump(registry, registry_file)
+    encrypted_file_path = os.path.join(
+    "encrypted_files", 
+    f"{file_name}_{int(time.time())}.enc")
     if os.path.exists("registry.json"):
         with open("registry.json", 'r') as registry_file:
             registry = json.load(registry_file)
@@ -95,7 +100,7 @@ def decryption():
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
-    password = input("Enter the password for decryption: ")
+    password = getpass.getpass("Enter the password for decryption: ")
     password_bytes = password.encode()
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -131,7 +136,9 @@ def menu():
         decryption()
     elif choice == "3":
         print("Exiting...")
+        os._exit(0)
     else:
         print("Invalid choice. Please try again.")
+        os._exit(0)
 while True:
     menu()
