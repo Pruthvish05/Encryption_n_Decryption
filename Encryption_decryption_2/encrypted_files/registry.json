@@ -1,0 +1,22 @@
+{
+    "example.txt.enc": {
+        "original_name": "example.txt",
+        "path": "encrypted_files\\example.txt.enc",
+        "salt": "daf7b73b6602d363815ac78a1c44b9c9"
+    },
+    "example_2.txt.enc": {
+        "original_name": "example_2.txt",
+        "path": "encrypted_files\\example_2.txt.enc",
+        "salt": "7d54822fb29bb86822a70fe76f399193"
+    },
+    "example_3.txt.enc": {
+        "original_name": "example_3.txt",
+        "path": "encrypted_files\\example_3.txt_1775829618.enc",
+        "salt": "6e4ed98d941b450f6b2542707c8e32c9"
+    },
+    "example3.txt.enc": {
+        "original_name": "example3.txt",
+        "path": "encrypted_files\\example3.txt.enc",
+        "salt": "5ca16321a878790cae1ff2974f21c8bd"
+    }
+}
