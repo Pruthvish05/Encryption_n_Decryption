@@ -57,6 +57,7 @@ def encryption():
         json.dump(registry, registry_file, indent=4)
     print(f"File encrypted successfully and saved to {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
+    print("Encrypt Salt:", salt.hex())
     if delete_original == "yes":
         os.remove(file_path)
         print("Original file deleted.")
@@ -70,7 +71,7 @@ def encryption():
     #     "salt": salt.hex(),
     #     "key": key.hex()
     # }
-    # with open("registry.json", 'w') as registry_file:
+    # with open("encrypted_files/registry.json", 'w') as registry_file:
     #     json.dump(registry, registry_file)
 def decryption():
     print("Decryption selected")
@@ -107,7 +108,7 @@ def decryption():
     fernet = Fernet(fernet_key)
     try:
         with open(encrypted_file_path, 'rb') as f:
-            enrypted_data = f.read()
+            encrypted_data = f.read()
         decrypted_data = fernet.decrypt(encrypted_data)
     except Exception as e:
         print("Decryption failed. Incorrect password or corrupted file.")
