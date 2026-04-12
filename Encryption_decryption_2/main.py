@@ -6,6 +6,7 @@ import base64
 import json
 import getpass
 import time
+import re
 #just a simple CLI menu
 #not simple anymore lol
 #need to add error handling and edge cases
@@ -21,7 +22,27 @@ def encryption():
     print(f"file loaded successfully")
     print(f"File-name: {file_name}")
     print(f"File-size: {len(data)} bytes")
-    password = getpass.getpass("Enter a password for encryption: ")
+    def validate_password(password):
+        if len(password) < 8:
+            print("Password must be at least 8 characters long.")
+            return False
+        if not re.search(r"[A-Z]", password):
+            print("Password must contain at least one uppercase letter.")
+            return False
+        if not re.search(r"[a-z]", password):
+            print("Password must contain at least one lowercase letter.")
+            return False
+        if not re.search(r"\d", password):
+            print("Password must contain at least one digit.")
+            return False
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            print("Password must contain at least one special character.")
+            return False
+        return True
+    while True:
+        password = getpass.getpass("Enter a strong password for encryption: ")
+        if validate_password(password):
+            break
     password_bytes = password.encode()
     salt= os.urandom(16)
     kdf = PBKDF2HMAC(

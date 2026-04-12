@@ -7,6 +7,9 @@ passwordlist = ["password", "123456", "123456789",
             "12345678", "12345", "qwerty", "abc123", 
             "football", "monkey", "letmein"]
 salt_here = "salt_from_registry_json"
+#this is just the file which can be created to decrypt a file without the owner 
+#knowing the password but having the encrypted file and the salt
+#and also the password
 salt = bytes.fromhex(salt_here)  
 for password in passwordlist:
     password_bytes = password.encode()
