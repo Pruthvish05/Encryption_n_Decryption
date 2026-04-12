@@ -8,6 +8,26 @@ passwordlist = ["password", "123456", "123456789",
             "football", "monkey", "letmein"]
 salt_here = "salt_from_registry_json"
 salt = bytes.fromhex(salt_here)  
+for password in passwordlist:
+    password_bytes = password.encode()
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=200000,
+    )
+    key = kdf.derive(password_bytes)
+    fernet_key = base64.urlsafe_b64encode(key)
+    fernet = Fernet(fernet_key)
+    try:
+        decrypted_data = fernet.decrypt(b"encrypted_data_here")
+        print(f"Password found: {password}")
+        break
+    except Exception as e:
+        continue
+
+
+
 
 
 
