@@ -11,7 +11,6 @@ import time
 #need to add error handling and edge cases
 #need to add creating a folder for this and registry .json file
 def encryption():
-    print("Encryption selected")
     file_path = input("Enter the file path to encrypt: ")
     if not os.path.isfile(file_path):
         print("File does not exist. Please try again.")
@@ -86,11 +85,15 @@ def decryption():
     for index, file_name in enumerate(registry.keys(), start=1):
         print(f"{index}. {file_name}")
     try:
-        choice = input("Enter the number of the file you want to decrypt: ")
-        selected_file = list(registry.keys())[int(choice) - 1]
-    except (ValueError, IndexError):
-        print("Invalid choice. Please try again.")
+        choice = int(input("Enter the number of the file you want to decrypt: "))
+        keys = list(registry.keys())
+        if choice < 1 or choice > len(keys):
+            print("Invalid choice. Please try again.")
+            return
+    except ValueError:
+        print("Invalid input. Please enter a number.")
         return
+    
     file_info = registry[selected_file]
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
@@ -114,26 +117,33 @@ def decryption():
         print("Decryption failed. Incorrect password or corrupted file.")
         return
     output_file_path = os.path.join("decrypted_files", original_name)
+    if os.path.exists(output_file_path):
+        overwrite = input(f"{output_file_path} already exists. Do you want to overwrite it? (yes/no): ").lower()
+        if overwrite != "yes":
+            print("Decryption cancelled.")
+            return
     os.makedirs("decrypted_files", exist_ok=True)
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
     print(f"File decrypted successfully and saved to {output_file_path}")
 
 def menu():
-    print("Welcome to the Encryption/Decryption Tool")
-    print("1. Encrypt a file")
-    print("2. Decrypt a file")
-    print("3. Exit")
-    choice = input("Enter your choice: ")
-    if choice == "1":
-        encryption()
-    elif choice == "2":
-        decryption()
-    elif choice == "3":
-        print("Exiting...")
-        os._exit(0)
-    else:
-        print("Invalid choice. Please try again.")
-        os._exit(0)
-while True:
+    while True:
+        print("Welcome to the Encryption/Decryption Tool")
+        print("1. Encrypt a file")
+        print("2. Decrypt a file")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+        if choice == "1":
+            encryption()
+        elif choice == "2":
+            decryption()
+        elif choice == "3":
+            print("Exiting...")
+            os._exit(0)
+        else:
+            print("Invalid choice. Please try again.")
+            os._exit(0)
+
+if __name__ == "__main__":
     menu()
