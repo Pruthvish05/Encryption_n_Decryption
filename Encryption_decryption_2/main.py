@@ -49,7 +49,7 @@ def encryption():
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
-        iterations=200000,
+        iterations=500000,
     )
     key = kdf.derive(password_bytes)
     print(f"Encryption key derived successfully")
@@ -125,7 +125,7 @@ def decryption():
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
-        iterations=200000,
+        iterations=500000,
     )
     key = kdf.derive(password_bytes)
     fernet_key = base64.urlsafe_b64encode(key)
