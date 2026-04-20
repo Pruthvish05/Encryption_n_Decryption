@@ -12,8 +12,8 @@ import argparse
 #not simple anymore lol
 #need to add error handling and edge cases
 #need to add creating a folder for this and registry .json file
-def encryption():
-    file_path = input("Enter the file path to encrypt: ")
+def encryption(file_path):
+    # file_path = input("Enter the file path to encrypt: ")
     if not os.path.isfile(file_path):
         print("File does not exist. Please try again.")
         return
@@ -95,7 +95,7 @@ def encryption():
     # }
     # with open("encrypted_files/registry.json", 'w') as registry_file:
     #     json.dump(registry, registry_file)
-def decryption():
+def decryption(file_path=None):
     print("Decryption selected")
     # Here we would add our decryption code
     #now we will
@@ -172,13 +172,13 @@ def menu():
 
 def main():
     parser = argparse.ArgumentParser(description="A simple encryption/decryption tool")
-    parser.add_argument('--encrypt', action='store_true', help='Encrypt a file')
-    parser.add_argument('--decrypt', action='store_true', help='Decrypt a file')
+    parser.add_argument("mode", choices=['encrypt', 'decrypt'], help='Mode of operation')
+    parser.add_argument("file", help="Path to the file to encrypt/decrypt", nargs='?', default=None)
     args = parser.parse_args()
     if args.mode == 'encrypt':
         encryption(args.file)
     elif args.mode == 'decrypt':
-        decryption()
+        decryption(args.file)
     else:
         menu()
 
