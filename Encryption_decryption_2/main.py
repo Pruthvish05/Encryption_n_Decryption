@@ -43,6 +43,7 @@ def encryption():
         password = getpass.getpass("Enter a strong password for encryption: ")
         if validate_password(password):
             break
+    time.sleep(1)
     password_bytes = password.encode()
     salt= os.urandom(16)
     kdf = PBKDF2HMAC(
@@ -161,9 +162,11 @@ def menu():
             decryption()
         elif choice == "3":
             print("Exiting...")
+            time.sleep(2)
             os._exit(0)
         else:
             print("Invalid choice. Please try again.")
+            time.sleep(1)
             os._exit(0)
 
 if __name__ == "__main__":
