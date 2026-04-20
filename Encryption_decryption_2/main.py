@@ -7,6 +7,7 @@ import json
 import getpass
 import time
 import re
+import argparse
 #just a simple CLI menu
 #not simple anymore lol
 #need to add error handling and edge cases
@@ -169,7 +170,16 @@ def menu():
             time.sleep(1)
             os._exit(0)
 
-if __name__ == "__main__":
-    menu()
+def main():
+    parser = argparse.ArgumentParser(description="A simple encryption/decryption tool")
+    parser.add_argument('--encrypt', action='store_true', help='Encrypt a file')
+    parser.add_argument('--decrypt', action='store_true', help='Decrypt a file')
+    args = parser.parse_args()
+    if args.mode == 'encrypt':
+        encryption(args.file)
+    elif args.mode == 'decrypt':
+        decryption()
+    else:
+        menu()
 
 #nearly done close to deploying.
