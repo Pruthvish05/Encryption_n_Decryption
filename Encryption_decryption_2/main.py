@@ -8,6 +8,7 @@ import getpass
 import time
 import re
 import argparse
+REGISTRY_FILE = "encrypted_files/registry.json"
 #just a simple CLI menu
 #not simple anymore lol
 #need to add error handling and edge cases
@@ -65,8 +66,8 @@ def encryption(file_path):
     encrypted_file_path = os.path.join("encrypted_files", file_name + ".enc")
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
-    if os.path.exists("registry.json"):
-        with open("registry.json", 'r') as registry_file:
+    if os.path.exists("REGISTRY_FILE"):
+        with open("REGISTRY_FILE", 'r') as registry_file:
             registry = json.load(registry_file)
     else:
         registry = {}
@@ -75,7 +76,7 @@ def encryption(file_path):
         "path": encrypted_file_path,
         "salt": salt.hex(),
     }
-    with open("encrypted_files/registry.json", 'w') as registry_file:
+    with open("REGISTRY_FILE", 'w') as registry_file:
         json.dump(registry, registry_file, indent=4)
     print(f"File encrypted successfully and saved to {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
@@ -99,10 +100,10 @@ def decryption(file_path=None):
     print("Decryption selected")
     # Here we would add our decryption code
     #now we will
-    if not os.path.isfile("encrypted_files/registry.json"):
+    if not os.path.isfile("REGISTRY_FILE"):
         print("No encrypted files found. Please encrypt a file first.")
         return
-    with open("encrypted_files/registry.json", 'r') as registry_file:
+    with open("REGISTRY_FILE", 'r') as registry_file:
         registry = json.load(registry_file)
     print("Available encrypted files:")
     for index, file_name in enumerate(registry.keys(), start=1):
@@ -116,7 +117,7 @@ def decryption(file_path=None):
     except ValueError:
         print("Invalid input. Please enter a number.")
         return
-    
+    selected_file = keys[choice - 1]
     file_info = registry[selected_file]
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
