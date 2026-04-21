@@ -181,5 +181,4 @@ def main():
         decryption(args.file)
     else:
         menu()
-
 #nearly done close to deploying.
