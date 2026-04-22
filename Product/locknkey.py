@@ -158,7 +158,7 @@ def decryption(file_path=None):
 #we have a new function it is 
 #COMPRESS
 def compress(file_path):
-    
+    pass
 # we do not use menu as this will be 
 # used as a command line tool with arguments for encryption and decryption and compression
 
@@ -193,4 +193,7 @@ def main():
         decryption(args.file)
     else:
         #menu()
-#nearly done close to deploying.
+#nearly done close to deploying
+        print("Invalid mode. Please choose 'encrypt' or 'decrypt'.")
+        time.sleep(1)
+        os._exit(0)
