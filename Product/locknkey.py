@@ -156,25 +156,25 @@ def decryption(file_path=None):
 # we do not use menu as this will be 
 # used as a command line tool with arguments for encryption and decryption and compression
 
-def menu():
-    while True:
-        print("Welcome to the Encryption/Decryption Tool")
-        print("1. Encrypt a file")
-        print("2. Decrypt a file")
-        print("3. Exit")
-        choice = input("Enter your choice: ")
-        if choice == "1":
-            encryption()
-        elif choice == "2":
-            decryption()
-        elif choice == "3":
-            print("Exiting...")
-            time.sleep(2)
-            os._exit(0)
-        else:
-            print("Invalid choice. Please try again.")
-            time.sleep(1)
-            os._exit(0)
+# def menu():
+#     while True:
+#         print("Welcome to the Encryption/Decryption Tool")
+#         print("1. Encrypt a file")
+#         print("2. Decrypt a file")
+#         print("3. Exit")
+#         choice = input("Enter your choice: ")
+#         if choice == "1":
+#             encryption()
+#         elif choice == "2":
+#             decryption()
+#         elif choice == "3":
+#             print("Exiting...")
+#             time.sleep(2)
+#             os._exit(0)
+#         else:
+#             print("Invalid choice. Please try again.")
+#             time.sleep(1)
+#             os._exit(0)
 
 def main():
     parser = argparse.ArgumentParser(description="A simple encryption/decryption tool")
