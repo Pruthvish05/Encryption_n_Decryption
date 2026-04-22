@@ -153,6 +153,9 @@ def decryption(file_path=None):
         output_file.write(decrypted_data)
     print(f"File decrypted successfully and saved to {output_file_path}")
 
+# we do not use menu as this will be 
+# used as a command line tool with arguments for encryption and decryption and compression
+
 def menu():
     while True:
         print("Welcome to the Encryption/Decryption Tool")
