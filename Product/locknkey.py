@@ -106,17 +106,19 @@ def decryption(file_path=None):
     with open("REGISTRY_FILE", 'r') as registry_file:
         registry = json.load(registry_file)
     print("Available encrypted files:")
-    for index, file_name in enumerate(registry.keys(), start=1):
-        print(f"{index}. {file_name}")
-    try:
-        choice = int(input("Enter the number of the file you want to decrypt: "))
-        keys = list(registry.keys())
-        if choice < 1 or choice > len(keys):
-            print("Invalid choice. Please try again.")
-            return
-    except ValueError:
-        print("Invalid input. Please enter a number.")
+    selected_file = os.path.basename(file_path)
+    if selected_file not in registry:
+        print("File not found in registry. Please try again.")
         return
+    # try:
+    #     choice = int(input("Enter the number of the file you want to decrypt: "))
+    #     keys = list(registry.keys())
+    #     if choice < 1 or choice > len(keys):
+    #         print("Invalid choice. Please try again.")
+    #         return
+    # except ValueError:
+    #     print("Invalid input. Please enter a number.")
+    #     return
     selected_file = keys[choice - 1]
     file_info = registry[selected_file]
     encrypted_file_path = file_info["path"]
