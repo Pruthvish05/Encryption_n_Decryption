@@ -100,6 +100,9 @@ def decryption(file_path=None):
     print("Decryption selected")
     # Here we would add our decryption code
     #now we will
+    if file_path is None:
+        print("Please provide a file path for decryption.")
+        return
     if not os.path.isfile("REGISTRY_FILE"):
         print("No encrypted files found. Please encrypt a file first.")
         return
@@ -119,7 +122,7 @@ def decryption(file_path=None):
     # except ValueError:
     #     print("Invalid input. Please enter a number.")
     #     return
-    selected_file = keys[choice - 1]
+    #selected_file = keys[choice - 1]
     file_info = registry[selected_file]
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
@@ -186,5 +189,5 @@ def main():
     elif args.mode == 'decrypt':
         decryption(args.file)
     else:
-        menu()
+        #menu()
 #nearly done close to deploying.
