@@ -155,7 +155,10 @@ def decryption(file_path=None):
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
     print(f"File decrypted successfully and saved to {output_file_path}")
-
+#we have a new function it is 
+#COMPRESS
+def compress(file_path):
+    
 # we do not use menu as this will be 
 # used as a command line tool with arguments for encryption and decryption and compression
 
