@@ -128,15 +128,19 @@ def decryption(file_path=None):
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
-    password = getpass.getpass("Enter the password for decryption: ")
-    password_bytes = password.encode()
+    while True:
+        password = getpass.getpass("Enter the password for decryption: ")
+        confirm_password = getpass.getpass("Confirm password: ")
+        if password == confirm_password:
+            break
+        print("Passwords do not match. Please try again.")
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
         iterations=500000,
     )
-    key = kdf.derive(password_bytes)
+    key = kdf.derive(password.encode())
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     try:
