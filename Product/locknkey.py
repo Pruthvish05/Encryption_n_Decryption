@@ -64,7 +64,7 @@ def encryption(file_path):
     fernet = Fernet(fernet_key)
     encrypted_data = fernet.encrypt(data)
     os.makedirs("encrypted_files", exist_ok=True)
-    encrypted_file_path = os.path.join("encrypted_files", file_name + ".enc")
+    encrypted_file_path = os.path.join("encrypted_files",f"{file_name}_{int(time.time())}.enc")
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
     if os.path.exists("REGISTRY_FILE"):
