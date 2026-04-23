@@ -58,7 +58,8 @@ def encryption(file_path):
     print(f"Encryption key derived successfully")
     # Here we would add our encryption code
     print("salt", salt.hex())
-    print("key", key.hex())
+    #this reveals too much so gotta comment it out for now
+    #print("key", key.hex())
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     encrypted_data = fernet.encrypt(data)
