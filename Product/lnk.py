@@ -164,9 +164,9 @@ def decryption(file_path=None):
 #COMPRESS
 def compress(file_path):
     pass
+
 # we do not use menu as this will be 
 # used as a command line tool with arguments for encryption and decryption and compression
-
 # def menu():
 #     while True:
 #         print("Welcome to the Encryption/Decryption Tool")
