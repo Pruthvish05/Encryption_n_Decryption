@@ -169,6 +169,12 @@ def compress(data):
         return compressed_data
     else:
         return data
+    
+def decompress(data):
+    try:
+        return zlib.decompress(data)
+    except zlib.error:
+        return data
 
 # we do not use menu as this will be 
 # used as a command line tool with arguments for encryption and decryption and compression
