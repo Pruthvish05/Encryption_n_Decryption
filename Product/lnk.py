@@ -163,20 +163,22 @@ def decryption(file_path=None):
     print(f"File decrypted successfully and saved to {output_file_path}")
 #we have a new function it is 
 #COMPRESS
-def compress(data):
-    compressed_data = zlib.compress(data)
-    if len(compressed_data) < len(data):
-        return compressed_data
-    else:
-        return data
+#had to stop this got confused this
+#surely will be an update in the near future.
+# def compress(data):
+#     compressed_data = zlib.compress(data)
+#     if len(compressed_data) < len(data):
+#         return compressed_data
+#     else:
+#         return data
     
-def decompress(data,compressed_data):
-    try:
-        decompressed_data = zlib.decompress(compressed_data)
-        return decompressed_data
-    except zlib.error:
-        print("Decompression failed. Data may not be compressed.")
-        return data
+# def decompress(data,compressed_data):
+#     try:
+#         decompressed_data = zlib.decompress(compressed_data)
+#         return decompressed_data
+#     except zlib.error:
+#         print("Decompression failed. Data may not be compressed.")
+#         return data
 
 # we do not use menu as this will be 
 # used as a command line tool with arguments for encryption and decryption and compression
