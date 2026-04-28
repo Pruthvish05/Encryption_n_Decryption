@@ -8,6 +8,7 @@ import getpass
 import time
 import re
 import argparse
+import zlib
 REGISTRY_FILE = "encrypted_files/registry.json"
 #just a simple CLI menu
 #not simple anymore lol
@@ -162,8 +163,12 @@ def decryption(file_path=None):
     print(f"File decrypted successfully and saved to {output_file_path}")
 #we have a new function it is 
 #COMPRESS
-def compress(file_path):
-    pass
+def compress(data):
+    compressed_data = zlib.compress(data)
+    if len(compressed_data) < len(data):
+        return compressed_data
+    else:
+        return data
 
 # we do not use menu as this will be 
 # used as a command line tool with arguments for encryption and decryption and compression
