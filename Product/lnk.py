@@ -160,7 +160,7 @@ def decryption(file_path=None):
     os.makedirs("decrypted_files", exist_ok=True)
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
-    print(f"File decrypted successfully and saved to {output_file_path}")
+    print(f"\nFile decrypted successfully and saved to {output_file_path}")
 #we have a new function it is 
 #COMPRESS
 #had to stop this got confused this
