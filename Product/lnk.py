@@ -110,7 +110,7 @@ def decryption(file_path=None):
         return
     with open(REGISTRY_FILE, 'r') as registry_file:
         registry = json.load(registry_file)
-    print("Available encrypted files:")
+    # print("Available encrypted files:")
     selected_file = os.path.basename(file_path)
     if selected_file not in registry:
         print("File not found in registry. Please try again.")
@@ -212,7 +212,9 @@ def main():
     elif args.mode == 'decrypt':
         decryption(args.file)
     else:
-        #menu()
+        if args.file is None:
+            print("Please provide a file path for encryption/decryption.")
+            return
 #nearly done close to deploying
         print("Invalid mode. Please choose 'encrypt' or 'decrypt'.")
         time.sleep(1)
