@@ -82,7 +82,7 @@ def encryption(file_path):
         json.dump(registry, registry_file, indent=4)
     print(f"File encrypted successfully and saved to {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
-    print("Encrypt Salt:", salt.hex())
+    # print("Encrypt Salt:", salt.hex())
     if delete_original == "yes":
         os.remove(file_path)
         print("Original file deleted.")
@@ -131,8 +131,8 @@ def decryption(file_path=None):
     original_name = file_info["original_name"]
     while True:
         password = getpass.getpass("Enter the password for decryption: ")
-        confirm_password = getpass.getpass("Confirm password: ")
-        if password == confirm_password:
+        # confirm_password = getpass.getpass("Confirm password: ")
+        if password == password:
             break
         print("Passwords do not match. Please try again.")
     kdf = PBKDF2HMAC(
