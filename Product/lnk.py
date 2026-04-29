@@ -68,8 +68,8 @@ def encryption(file_path):
     encrypted_file_path = os.path.join("encrypted_files",f"{file_name}_{int(time.time())}.enc")
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
-    if os.path.exists("REGISTRY_FILE"):
-        with open("REGISTRY_FILE", 'r') as registry_file:
+    if os.path.exists(REGISTRY_FILE):
+        with open(REGISTRY_FILE, 'r') as registry_file:
             registry = json.load(registry_file)
     else:
         registry = {}
@@ -78,7 +78,7 @@ def encryption(file_path):
         "path": encrypted_file_path,
         "salt": salt.hex(),
     }
-    with open("REGISTRY_FILE", 'w') as registry_file:
+    with open(REGISTRY_FILE, 'w') as registry_file:
         json.dump(registry, registry_file, indent=4)
     print(f"File encrypted successfully and saved to {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
@@ -105,10 +105,10 @@ def decryption(file_path=None):
     if file_path is None:
         print("Please provide a file path for decryption.")
         return
-    if not os.path.isfile("REGISTRY_FILE"):
+    if not os.path.isfile(REGISTRY_FILE):
         print("No encrypted files found. Please encrypt a file first.")
         return
-    with open("REGISTRY_FILE", 'r') as registry_file:
+    with open(REGISTRY_FILE, 'r') as registry_file:
         registry = json.load(registry_file)
     print("Available encrypted files:")
     selected_file = os.path.basename(file_path)
