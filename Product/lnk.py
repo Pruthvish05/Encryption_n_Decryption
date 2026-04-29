@@ -10,6 +10,11 @@ import re
 import argparse
 import zlib
 REGISTRY_FILE = "encrypted_files/registry.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+ENCRYPTED_DIR = os.path.join(BASE_DIR, "encrypted_files")
+DECRYPTED_DIR = os.path.join(BASE_DIR, "decrypted_files")
+REGISTRY_FILE = os.path.join(ENCRYPTED_DIR, "registry.json")
 #just a simple CLI menu
 #not simple anymore lol
 #need to add error handling and edge cases
@@ -64,8 +69,8 @@ def encryption(file_path):
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     encrypted_data = fernet.encrypt(data)
-    os.makedirs("encrypted_files", exist_ok=True)
-    encrypted_file_path = os.path.join("encrypted_files",f"{file_name}_{int(time.time())}.enc")
+    os.makedirs(ENCRYPTED_DIR, exist_ok=True)
+    encrypted_file_path = os.path.join(ENCRYPTED_DIR, f"{file_name}_{int(time.time())}.enc")
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
     if os.path.exists(REGISTRY_FILE):
@@ -151,13 +156,13 @@ def decryption(file_path=None):
     except Exception as e:
         print("Decryption failed. Incorrect password or corrupted file.")
         return
-    output_file_path = os.path.join("decrypted_files", original_name)
+    output_file_path = os.path.join(DECRYPTED_DIR, original_name)
     if os.path.exists(output_file_path):
         overwrite = input(f"{output_file_path} already exists. Do you want to overwrite it? (yes/no): ").lower()
         if overwrite != "yes":
             print("Decryption cancelled.")
             return
-    os.makedirs("decrypted_files", exist_ok=True)
+    os.makedirs(DECRYPTED_DIR, exist_ok=True)
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
     print(f"\nFile decrypted successfully and saved to {output_file_path}")
