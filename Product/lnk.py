@@ -222,11 +222,14 @@ def decryption(file_path=None):
 #             os._exit(0)
 
 def main():
-    ensure_directories()
     parser = argparse.ArgumentParser(description="A simple encryption/decryption tool")
     parser.add_argument("mode", choices=['encrypt', 'decrypt'], help='Mode of operation')
     parser.add_argument("file", help="Path to the file to encrypt/decrypt", nargs='?', default=None)
     args = parser.parse_args()
+    ensure_directories()
+    if not os.path.isfile(args.file):
+        print("File does not exist. Please try again.")
+        return
     if args.mode == 'encrypt':
         encryption(args.file)
     elif args.mode == 'decrypt':
