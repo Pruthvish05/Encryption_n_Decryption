@@ -19,6 +19,13 @@ REGISTRY_FILE = os.path.join(ENCRYPTED_DIR, "registry.json")
 #not simple anymore lol
 #need to add error handling and edge cases
 #need to add creating a folder for this and registry .json file
+def ensure_directories():
+    os.makedirs(ENCRYPTED_DIR, exist_ok=True)
+    os.makedirs(DECRYPTED_DIR, exist_ok=True)
+    if not os.path.isfile(REGISTRY_FILE):
+        with open(REGISTRY_FILE, 'w') as registry_file:
+            json.dump({}, registry_file)
+        
 def encryption(file_path):
     # file_path = input("Enter the file path to encrypt: ")
     if not os.path.isfile(file_path):
