@@ -22,10 +22,17 @@ REGISTRY_FILE = os.path.join(ENCRYPTED_DIR, "registry.json")
 def ensure_directories():
     os.makedirs(ENCRYPTED_DIR, exist_ok=True)
     os.makedirs(DECRYPTED_DIR, exist_ok=True)
-    if not os.path.isfile(REGISTRY_FILE):
-        with open(REGISTRY_FILE, 'w') as registry_file:
-            json.dump({}, registry_file)
-        
+
+def load_registry():
+    if not os.path.exists(REGISTRY_FILE):
+        return {}
+    try:
+        with open(REGISTRY_FILE, 'r') as registry_file:
+            return json.load(registry_file)
+    except json.JSONDecodeError:
+        print("Registry file is corrupted. Starting with an empty registry.")
+        return {}
+    
 def encryption(file_path):
     # file_path = input("Enter the file path to encrypt: ")
     if not os.path.isfile(file_path):
@@ -215,6 +222,7 @@ def decryption(file_path=None):
 #             os._exit(0)
 
 def main():
+    ensure_directories()
     parser = argparse.ArgumentParser(description="A simple encryption/decryption tool")
     parser.add_argument("mode", choices=['encrypt', 'decrypt'], help='Mode of operation')
     parser.add_argument("file", help="Path to the file to encrypt/decrypt", nargs='?', default=None)
