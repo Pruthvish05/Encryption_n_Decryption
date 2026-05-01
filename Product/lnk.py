@@ -99,7 +99,8 @@ def encryption(file_path):
     }
     with open(REGISTRY_FILE, 'w') as registry_file:
         json.dump(registry, registry_file, indent=4)
-    print(f"File encrypted successfully and saved to {encrypted_file_path}")
+    print(f"Encrypted -> {encrypted_file_path}")
+    # print(f"File encrypted successfully and saved to {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
     # print("Encrypt Salt:", salt.hex())
     if delete_original == "yes":
@@ -179,7 +180,8 @@ def decryption(file_path=None):
     os.makedirs(DECRYPTED_DIR, exist_ok=True)
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
-    print(f"\nFile decrypted successfully and saved to {output_file_path}")
+    print(f"Decrypted -> {output_file_path}")
+    #print(f"\nFile decrypted successfully and saved to {output_file_path}")
 #we have a new function it is 
 #COMPRESS
 #had to stop this got confused this
