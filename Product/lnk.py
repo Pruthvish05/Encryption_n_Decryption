@@ -62,9 +62,13 @@ def encryption(file_path):
             return False
         return True
     while True:
-        password = getpass.getpass("Enter a strong password for encryption: ")
+        confirm = getpass.getpass("Enter a strong password for encryption: ")
+        password= getpass.getpass("Confirm password: ")
         if validate_password(password):
             break
+        if confirm != password:
+            print("Passwords do not match. Please try again.")
+            continue
     time.sleep(1)
     password_bytes = password.encode()
     salt= os.urandom(16)
@@ -168,7 +172,7 @@ def decryption(file_path=None):
         with open(encrypted_file_path, 'rb') as f:
             encrypted_data = f.read()
         decrypted_data = fernet.decrypt(encrypted_data)
-    except Exception as e:
+    except Exception:
         print("Decryption failed. Incorrect password or corrupted file.")
         return
     output_file_path = os.path.join(DECRYPTED_DIR, original_name)
