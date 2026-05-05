@@ -93,7 +93,7 @@ def encryption(file_path):
         encrypted_file.write(encrypted_data)
     if os.path.exists(REGISTRY_FILE):
         with open(REGISTRY_FILE, 'r') as registry_file:
-            registry = json.load(registry_file)
+            registry = load_registry()
     else:
         registry = {}
     registry[os.path.basename(encrypted_file_path)] = {
@@ -133,7 +133,7 @@ def decryption(file_path=None):
         print("No encrypted files found. Please encrypt a file first.")
         return
     with open(REGISTRY_FILE, 'r') as registry_file:
-        registry = json.load(registry_file)
+        registry = load_registry()
     # print("Available encrypted files:")
     selected_file = os.path.basename(file_path)
     if selected_file not in registry:
