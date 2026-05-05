@@ -22,6 +22,7 @@ REGISTRY_FILE = os.path.join(ENCRYPTED_DIR, "registry.json")
 def ensure_directories():
     os.makedirs(ENCRYPTED_DIR, exist_ok=True)
     os.makedirs(DECRYPTED_DIR, exist_ok=True)
+    os.makedirs(os.path.dirname(REGISTRY_FILE), exist_ok=True)
 
 def load_registry():
     if not os.path.exists(REGISTRY_FILE):
@@ -39,6 +40,8 @@ def save_registry(registry):
             json.dump(registry, registry_file, indent=4)
     except Exception as e:
         print(f"Failed to save registry: {e}")
+
+
 def encryption(file_path):
     # file_path = input("Enter the file path to encrypt: ")
     if not os.path.isfile(file_path):
