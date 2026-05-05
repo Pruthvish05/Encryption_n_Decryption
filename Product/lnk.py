@@ -155,7 +155,6 @@ def decryption(file_path=None):
     original_name = file_info["original_name"]
     while True:
         password = getpass.getpass("Enter the password for decryption: ")
-        # confirm_password = getpass.getpass("Confirm password: ")
         if password == password:
             break
         print("Passwords do not match. Please try again.")
