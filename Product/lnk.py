@@ -32,7 +32,13 @@ def load_registry():
     except json.JSONDecodeError:
         print("Registry file is corrupted. Starting with an empty registry.")
         return {}
-    
+
+def save_registry(registry):
+    try:        
+        with open(REGISTRY_FILE, 'w') as registry_file:
+            json.dump(registry, registry_file, indent=4)
+    except Exception as e:
+        print(f"Failed to save registry: {e}")
 def encryption(file_path):
     # file_path = input("Enter the file path to encrypt: ")
     if not os.path.isfile(file_path):
@@ -81,13 +87,12 @@ def encryption(file_path):
     key = kdf.derive(password_bytes)
     print(f"Encryption key derived successfully")
     # Here we would add our encryption code
-    print("salt", salt.hex())
+    #print("salt", salt.hex())
     #this reveals too much so gotta comment it out for now
     #print("key", key.hex())
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     encrypted_data = fernet.encrypt(data)
-    os.makedirs(ENCRYPTED_DIR, exist_ok=True)
     encrypted_file_path = os.path.join(ENCRYPTED_DIR, f"{file_name}_{int(time.time())}.enc")
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
@@ -101,8 +106,7 @@ def encryption(file_path):
         "path": encrypted_file_path,
         "salt": salt.hex(),
     }
-    with open(REGISTRY_FILE, 'w') as registry_file:
-        json.dump(registry, registry_file, indent=4)
+    save_registry(registry)
     print(f"Encrypted -> {encrypted_file_path}")
     # print(f"File encrypted successfully and saved to {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
@@ -195,7 +199,7 @@ def decryption(file_path=None):
 #         return compressed_data
 #     else:
 #         return data
-    
+
 # def decompress(data,compressed_data):
 #     try:
 #         decompressed_data = zlib.decompress(compressed_data)
@@ -232,6 +236,10 @@ def main():
     parser.add_argument("file", help="Path to the file to encrypt/decrypt", nargs='?', default=None)
     args = parser.parse_args()
     ensure_directories()
+    if args.file is None:
+        print("Please provide a file path for encryption/decryption.")
+        return
+    
     if not os.path.isfile(args.file):
         print("File does not exist. Please try again.")
         return
