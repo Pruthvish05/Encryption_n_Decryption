@@ -153,10 +153,10 @@ def decryption(file_path=None):
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
-    while True:
-        password = getpass.getpass("Enter the password for decryption: ")
-        if password == password:
-            break
+    password = getpass.getpass("Enter the password for decryption: ")
+    if password == password:
+        print("Password confirmed.")
+    else:
         print("Passwords do not match. Please try again.")
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
