@@ -73,11 +73,12 @@ def encryption(file_path):
     while True:
         confirm = getpass.getpass("Enter a strong password for encryption: ")
         password= getpass.getpass("Confirm password: ")
-        if validate_password(password):
-            break
+        if not validate_password(password):
+            continue
         if confirm != password:
             print("Passwords do not match. Please try again.")
             continue
+        break
     time.sleep(1)
     password_bytes = password.encode()
     salt= os.urandom(16)
@@ -161,9 +162,7 @@ def decryption(file_path=None):
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
     password = getpass.getpass("Enter the password for decryption: ")
-    if password == password:
-        print("Password confirmed.")
-    else:
+    if not password:
         print("Passwords do not match. Please try again.")
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
