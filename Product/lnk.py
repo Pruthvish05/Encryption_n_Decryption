@@ -8,7 +8,8 @@ import getpass
 import time
 import re
 import argparse
-import zlib
+from cryptography.fernet import InvalidToken
+
 REGISTRY_FILE = "encrypted_files/registry.json"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -101,8 +102,7 @@ def encryption(file_path):
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
     if os.path.exists(REGISTRY_FILE):
-        with open(REGISTRY_FILE, 'r') as registry_file:
-            registry = load_registry()
+        registry = load_registry()
     else:
         registry = {}
     registry[os.path.basename(encrypted_file_path)] = {
