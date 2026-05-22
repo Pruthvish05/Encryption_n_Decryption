@@ -9,7 +9,7 @@ import time
 import re
 import argparse
 from cryptography.fernet import InvalidToken
-
+import sys
 REGISTRY_FILE = "encrypted_files/registry.json"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -48,6 +48,7 @@ def encryption(file_path):
     # file_path = input("Enter the file path to encrypt: ")
     if not os.path.isfile(file_path):
         print("File does not exist. Please try again.")
+        sys.exit(1)
         return
     file_name = os.path.basename(file_path)
     with open(file_path, 'rb') as file:
@@ -235,7 +236,7 @@ def decryption(file_path=None):
 
 def main():
     parser = argparse.ArgumentParser(prog = "lnk", description="LockNKey secure file encryption and decryption tool")
-    parser.add_argument("mode", choices=['encrypt', 'decrypt'], help='Mode of operation')
+    parser.add_argument("mode", choices=['encrypt', 'decrypt'], help='Mode of operation: encrypt or decrypt')
     parser.add_argument("file", help="Path to the file to encrypt/decrypt", nargs='?', default=None)
     args = parser.parse_args()
     ensure_directories()
