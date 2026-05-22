@@ -39,8 +39,9 @@ def save_registry(registry):
     try:        
         with open(REGISTRY_FILE, 'w') as registry_file:
             json.dump(registry, registry_file, indent=4)
-    except Exception as e:
-        print(f"Failed to save registry: {e}")
+    except InvalidToken as e:
+        print("wrong password or corrupted file")
+        return
 
 
 def encryption(file_path):
@@ -233,7 +234,7 @@ def decryption(file_path=None):
 #             os._exit(0)
 
 def main():
-    parser = argparse.ArgumentParser(description="A simple encryption/decryption tool")
+    parser = argparse.ArgumentParser(prog = "lnk", description="LockNKey secure file encryption and decryption tool")
     parser.add_argument("mode", choices=['encrypt', 'decrypt'], help='Mode of operation')
     parser.add_argument("file", help="Path to the file to encrypt/decrypt", nargs='?', default=None)
     args = parser.parse_args()
