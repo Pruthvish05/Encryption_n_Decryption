@@ -260,7 +260,5 @@ def main():
         time.sleep(1)
         os._exit(0)
 
-#update:2/06/2024
-#added command line arguments for encryption and decryption
 if __name__ == "__main__":
     main()
