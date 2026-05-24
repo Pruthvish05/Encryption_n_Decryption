@@ -10,9 +10,9 @@ import re
 import argparse
 from cryptography.fernet import InvalidToken
 import sys
+
 REGISTRY_FILE = "encrypted_files/registry.json"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 ENCRYPTED_DIR = os.path.join(BASE_DIR, "encrypted_files")
 DECRYPTED_DIR = os.path.join(BASE_DIR, "decrypted_files")
 REGISTRY_FILE = os.path.join(ENCRYPTED_DIR, "registry.json")
@@ -93,10 +93,6 @@ def encryption(file_path):
     )
     key = kdf.derive(password_bytes)
     print(f"Encryption key derived successfully")
-    # Here we would add our encryption code
-    #print("salt", salt.hex())
-    #this reveals too much so gotta comment it out for now
-    #print("key", key.hex())
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     encrypted_data = fernet.encrypt(data)
@@ -114,9 +110,7 @@ def encryption(file_path):
     }
     save_registry(registry)
     print(f"Encrypted -> {encrypted_file_path}")
-    # print(f"File encrypted successfully and saved to {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
-    # print("Encrypt Salt:", salt.hex())
     if delete_original == "yes":
         os.remove(file_path)
         print("Original file deleted.")
