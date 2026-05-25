@@ -45,22 +45,7 @@ def save_registry(registry):
         print(f"Failed to save registry: {e}")
         if os.path.exists(temp_registry_file):
             os.remove(temp_registry_file)
-
-
-
-def encryption(file_path):
-    # file_path = input("Enter the file path to encrypt: ")
-    if not os.path.isfile(file_path):
-        print("File does not exist. Please try again.")
-        sys.exit(1)
-        return
-    file_name = os.path.basename(file_path)
-    with open(file_path, 'rb') as file:
-        data = file.read()
-    print(f"file loaded successfully")
-    print(f"File-name: {file_name}")
-    print(f"File-size: {len(data)} bytes")
-    def validate_password(password):
+def validate_password(password):
         if len(password) < 8:
             print("Password must be at least 8 characters long.")
             return False
@@ -77,9 +62,22 @@ def encryption(file_path):
             print("Password must contain at least one special character.")
             return False
         return True
+
+
+def encryption(file_path):
+    # file_path = input("Enter the file path to encrypt: ")
+    if not os.path.isfile(file_path):
+        print("File does not exist. Please try again.")
+        sys.exit(1)
+    file_name = os.path.basename(file_path)
+    with open(file_path, 'rb') as file:
+        data = file.read()
+    print(f"file loaded successfully")
+    print(f"File-name: {file_name}")
+    print(f"File-size: {len(data)} bytes")
     while True:
-        confirm = getpass.getpass("Enter a strong password for encryption: ")
-        password= getpass.getpass("Confirm password: ")
+        password = getpass.getpass("Enter a strong password for encryption: ")
+        confirm = getpass.getpass("Confirm password: ")
         if not validate_password(password):
             continue
         if confirm != password:
@@ -103,10 +101,7 @@ def encryption(file_path):
     encrypted_file_path = os.path.join(ENCRYPTED_DIR, f"{file_name}_{int(time.time())}.enc")
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
-    if os.path.exists(REGISTRY_FILE):
-        registry = load_registry()
-    else:
-        registry = {}
+    registry = load_registry()
     registry[os.path.basename(encrypted_file_path)] = {
         "original_name": file_name,
         "path": encrypted_file_path,
@@ -163,7 +158,8 @@ def decryption(file_path=None):
     original_name = file_info["original_name"]
     password = getpass.getpass("Enter the password for decryption: ")
     if not password:
-        print("Passwords do not match. Please try again.")
+        print("Password cannot be empty. Decryption cancelled.")
+        return
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
