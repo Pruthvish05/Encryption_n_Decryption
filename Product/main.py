@@ -10,7 +10,7 @@ import re
 import argparse
 from cryptography.fernet import InvalidToken
 import sys
-
+import uuid
 REGISTRY_FILE = "encrypted_files/registry.json"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ENCRYPTED_DIR = os.path.join(BASE_DIR, "encrypted_files")
@@ -98,13 +98,14 @@ def encryption(file_path):
     fernet_key = base64.urlsafe_b64encode(key)
     fernet = Fernet(fernet_key)
     encrypted_data = fernet.encrypt(data)
-    encrypted_file_path = os.path.join(ENCRYPTED_DIR, f"{file_name}_{int(time.time())}.enc")
+    encrypted_name = f"{file_name}_{uuid.uuid4().hex[:8]}.enc"
+    encrypted_file_path = os.path.join(ENCRYPTED_DIR, encrypted_name)
     with open(encrypted_file_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted_data)
     registry = load_registry()
     registry[os.path.basename(encrypted_file_path)] = {
         "original_name": file_name,
-        "path": encrypted_file_path,
+        "path": os.path.basename(encrypted_file_path),
         "salt": salt.hex(),
     }
     save_registry(registry)
