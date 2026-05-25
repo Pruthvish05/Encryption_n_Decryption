@@ -29,7 +29,7 @@ def load_registry():
     if not os.path.exists(REGISTRY_FILE):
         return {}
     try:
-        with open(REGISTRY_FILE, 'r') as registry_file:
+        with open(REGISTRY_FILE, 'r', encoding='utf-8') as registry_file:
             return json.load(registry_file)
     except json.JSONDecodeError:
         print("Registry file is corrupted. Starting with an empty registry.")
@@ -38,7 +38,7 @@ def load_registry():
 def save_registry(registry):
     temp_registry_file = REGISTRY_FILE + ".tmp"
     try:
-        with open(temp_registry_file, 'w') as registry_file:
+        with open(temp_registry_file, 'w', encoding='utf-8') as registry_file:
             json.dump(registry, registry_file)
         os.replace(temp_registry_file, REGISTRY_FILE)
     except OSError as e:
@@ -135,8 +135,7 @@ def decryption(file_path=None):
     if not os.path.isfile(REGISTRY_FILE):
         print("No encrypted files found. Please encrypt a file first.")
         return
-    with open(REGISTRY_FILE, 'r') as registry_file:
-        registry = load_registry()
+    registry = load_registry()
     # print("Available encrypted files:")
     selected_file = os.path.basename(file_path)
     if selected_file not in registry:
@@ -173,8 +172,11 @@ def decryption(file_path=None):
         with open(encrypted_file_path, 'rb') as f:
             encrypted_data = f.read()
         decrypted_data = fernet.decrypt(encrypted_data)
-    except Exception:
-        print("Decryption failed. Incorrect password or corrupted file.")
+    except InvalidToken:
+        print("Invalid password. Decryption failed.")
+        return
+    except OSError as e:
+        print(f"Error reading encrypted file: {e}")
         return
     output_file_path = os.path.join(DECRYPTED_DIR, original_name)
     if os.path.exists(output_file_path):
@@ -236,11 +238,11 @@ def main():
     ensure_directories()
     if args.file is None:
         print("Please provide a file path for encryption/decryption.")
-        return
+        sys.exit(1)
     
     if not os.path.isfile(args.file):
         print("File does not exist. Please try again.")
-        return
+        sys.exit(1)
     if args.mode == 'encrypt':
         encryption(args.file)
     elif args.mode == 'decrypt':
@@ -248,11 +250,10 @@ def main():
     else:
         if args.file is None:
             print("Please provide a file path for encryption/decryption.")
-            return
-#nearly done close to deploying
+            sys.exit(1)
         print("Invalid mode. Please choose 'encrypt' or 'decrypt'.")
         time.sleep(1)
-        os._exit(0)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
