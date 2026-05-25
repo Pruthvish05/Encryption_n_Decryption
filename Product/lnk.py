@@ -36,12 +36,16 @@ def load_registry():
         return {}
 
 def save_registry(registry):
-    try:        
-        with open(REGISTRY_FILE, 'w') as registry_file:
-            json.dump(registry, registry_file, indent=4)
-    except InvalidToken as e:
-        print("wrong password or corrupted file")
-        return
+    temp_registry_file = REGISTRY_FILE + ".tmp"
+    try:
+        with open(temp_registry_file, 'w') as registry_file:
+            json.dump(registry, registry_file)
+        os.replace(temp_registry_file, REGISTRY_FILE)
+    except OSError as e:
+        print(f"Failed to save registry: {e}")
+        if os.path.exists(temp_registry_file):
+            os.remove(temp_registry_file)
+
 
 
 def encryption(file_path):
