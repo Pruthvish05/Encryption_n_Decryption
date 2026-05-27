@@ -32,8 +32,8 @@ def load_registry():
         with open(REGISTRY_FILE, 'r', encoding='utf-8') as registry_file:
             return json.load(registry_file)
     except json.JSONDecodeError:
-        print("Registry file is corrupted. Starting with an empty registry.")
-        return {}
+        print("Registry file is corrupted.")
+        sys.exit(1)
 
 def save_registry(registry):
     temp_registry_file = REGISTRY_FILE + ".tmp"
@@ -45,6 +45,7 @@ def save_registry(registry):
         print(f"Failed to save registry: {e}")
         if os.path.exists(temp_registry_file):
             os.remove(temp_registry_file)
+        sys.exit(1)
 def validate_password(password):
         if len(password) < 8:
             print("Password must be at least 8 characters long.")
@@ -84,7 +85,7 @@ def encryption(file_path):
             print("Passwords do not match. Please try again.")
             continue
         break
-    time.sleep(1)
+    # time.sleep(1)
     password_bytes = password.encode()
     salt= os.urandom(16)
     kdf = PBKDF2HMAC(
