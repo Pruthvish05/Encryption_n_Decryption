@@ -38,7 +38,7 @@ def encryption(file_path):
     print(f"File-name: {file_name}")
     print(f"File-size: {len(data)} bytes")
     while True:
-        password = getpass.getpass("Enter a strong password for encryption: ")
+        password = getpass.getpass("Enter a strong password for encryption(1upper, 1lower, 1digit): ")
         confirm = getpass.getpass("Confirm password: ")
         if not validate_password(password):
             continue
@@ -104,7 +104,11 @@ def decryption(file_path=None):
     #     return
     #selected_file = keys[choice - 1]
     file_info = registry[selected_file]
-    encrypted_file_path = file_info["path"]
+    encrypted_file_path = os.path.join(ENCRYPTED_DIR, file_info["path"])
+    if not os.path.isfile(encrypted_file_path):
+        print("Encrypted file not found. Please try again.")
+        return
+    
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
     password = getpass.getpass("Enter the password for decryption: ")

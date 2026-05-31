@@ -1,7 +1,1 @@
-{
-    "example_2.txt.enc": {
-        "original_name": "example_2.txt",
-        "path": "encrypted_files\\example_2.txt.enc",
-        "salt": "c8c6c4d01259ddd6f476ab8b99184400"
-    }
-}
+{"example_2.txt.enc": {"original_name": "example_2.txt", "path": "encrypted_files\\example_2.txt.enc", "salt": "c8c6c4d01259ddd6f476ab8b99184400"}, "mainex_1.txt_2736f710.enc": {"original_name": "mainex_1.txt", "path": "mainex_1.txt_2736f710.enc", "salt": "b55841503433ffeb668222298edfc50b"}}

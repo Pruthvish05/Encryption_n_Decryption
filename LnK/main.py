@@ -17,3 +17,6 @@ def main():
         encryption(args.file)
     elif args.mode == "decrypt":
         decryption(args.file)
+
+if __name__ == "__main__":
+    main()
