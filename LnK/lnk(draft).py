@@ -139,8 +139,13 @@ def decryption(file_path=None):
         return
     registry = load_registry()
     # print("Available encrypted files:")
-    selected_file = os.path.basename(file_path)
-    if selected_file not in registry:
+    requested_file = os.path.basename(file_path)
+    matching_entry= None
+    for encrypted_name, file_info in registry.items():
+        if file_info["original_name"] == requested_file:
+            matching_entry = file_info
+            break
+    if matching_entry is None:
         print("File not found in registry. Please try again.")
         return
     # try:
@@ -153,7 +158,7 @@ def decryption(file_path=None):
     #     print("Invalid input. Please enter a number.")
     #     return
     #selected_file = keys[choice - 1]
-    file_info = registry[selected_file]
+    file_info = matching_entry
     encrypted_file_path = file_info["path"]
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
