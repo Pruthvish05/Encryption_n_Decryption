@@ -138,10 +138,13 @@ def decryption(file_path=None):
         print("No encrypted files found. Please encrypt a file first.")
         return
     registry = load_registry()
+    print(registry)
     # print("Available encrypted files:")
     requested_file = os.path.basename(file_path)
     matching_entry= None
     for encrypted_name, file_info in registry.items():
+        print(type(file_info))
+        print(file_info)
         if file_info["original_name"] == requested_file:
             matching_entry = file_info
             break
@@ -159,7 +162,7 @@ def decryption(file_path=None):
     #     return
     #selected_file = keys[choice - 1]
     file_info = matching_entry
-    encrypted_file_path = file_info["path"]
+    encrypted_file_path = os.path.join(ENCRYPTED_DIR, file_info["path"])
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
     password = getpass.getpass("Enter the password for decryption: ")

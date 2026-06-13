@@ -98,7 +98,7 @@ def decryption(file_path=None):
     matching_entry= None
     for key, value in registry.items():
         if value["original_name"] == requested_file:
-            matching_entry = key
+            matching_entry = value
             break
     if matching_entry is None:
         print("File not found in registry. Please try again.")
@@ -114,6 +114,8 @@ def decryption(file_path=None):
     #     return
     #selected_file = keys[choice - 1]
     file_info = matching_entry
+    # print("DEBUG TYPE:", type(file_info))
+    # print("DEBUG VALUE:", file_info)
     encrypted_file_path = os.path.join(ENCRYPTED_DIR, file_info["path"])
     if not os.path.isfile(encrypted_file_path):
         print("Encrypted file not found. Please try again.")
