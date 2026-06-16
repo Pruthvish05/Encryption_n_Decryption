@@ -1,5 +1,6 @@
 import base64
 import getpass
+import time
 import uuid
 import os
 import sys
@@ -7,6 +8,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
 from cryptography.fernet import InvalidToken
+from matplotlib.units import registry
 from password_utils import validate_password
 from registry_utils import load_registry
 from registry_utils import save_registry
@@ -69,6 +71,7 @@ def encryption(file_path):
         "original_name": file_name,
         "path": os.path.basename(encrypted_file_path),
         "salt": salt.hex(),
+        "timestamp": time.time()
     }
     save_registry(registry)
     print(f"Encrypted -> {encrypted_file_path}")
@@ -95,14 +98,14 @@ def decryption(file_path=None):
     #     return
     #had to comment the above code due to UX reasons
     requested_file = os.path.basename(file_path)
-    matching_entry= None
-    for key, value in registry.items():
+    matches = []
+    for _, value in registry.items():
         if value["original_name"] == requested_file:
-            matching_entry = value
-            break
-    if matching_entry is None:
-        print("File not found in registry. Please try again.")
-        return
+            matches.append(value)
+        if not matches:
+            print("File not found in registry.")
+            return
+        matching_entry = max(matches,key=lambda x: x.get("timestamp", 0))
     # try:
     #     choice = int(input("Enter the number of the file you want to decrypt: "))
     #     keys = list(registry.keys())
@@ -155,3 +158,7 @@ def decryption(file_path=None):
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
     print(f"Decrypted -> {output_file_path}")
+    delete_encrypted = input("Do you want to delete the encrypted file? (yes/no): ").lower()
+    if delete_encrypted == "yes":
+        os.remove(encrypted_file_path)
+        print(f"Encrypted file deleted: {encrypted_file_path}")
