@@ -8,7 +8,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
 from cryptography.fernet import InvalidToken
-from matplotlib.units import registry
 from password_utils import validate_password
 from registry_utils import load_registry
 from registry_utils import save_registry
@@ -105,7 +104,7 @@ def decryption(file_path=None):
         if not matches:
             print("File not found in registry.")
             return
-        matching_entry = max(matches,key=lambda x: x.get("timestamp", 0))
+    matching_entry = max(matches,key=lambda x: x.get("timestamp", 0))
     # try:
     #     choice = int(input("Enter the number of the file you want to decrypt: "))
     #     keys = list(registry.keys())
