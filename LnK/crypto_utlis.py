@@ -73,11 +73,15 @@ def encryption(file_path):
         "timestamp": time.time()
     }
     save_registry(registry)
+    # print("----------------------------------------")
+    # print(registry)
+    # print("----------------------------------------")
     print(f"Encrypted -> {encrypted_file_path}")
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
     if delete_original == "yes":
         os.remove(file_path)
         print("Original file deleted.")
+        sys.exit(0)
 
 def decryption(file_path=None):
     print("Decryption selected")
@@ -97,13 +101,23 @@ def decryption(file_path=None):
     #     return
     #had to comment the above code due to UX reasons
     requested_file = os.path.basename(file_path)
+    print(f"Requested file for decryption: {requested_file}")
     matches = []
-    for _, value in registry.items():
+    for key, value in registry.items():
+        print(f"Checking: {value['original_name']}")
         if value["original_name"] == requested_file:
+            print("MATCH FOUND")
             matches.append(value)
-        if not matches:
-            print("File not found in registry.")
-            return
+    if not matches:
+        print("File not found in registry.")
+        sys.exit(1)
+    
+    # for _, value in registry.items():
+    #     if value["original_name"] == requested_file:
+    #         matches.append(value)
+    #     if not matches:
+    #         print("File not found in registry.")
+    #         return
     matching_entry = max(matches,key=lambda x: x.get("timestamp", 0))
     # try:
     #     choice = int(input("Enter the number of the file you want to decrypt: "))
@@ -121,7 +135,7 @@ def decryption(file_path=None):
     encrypted_file_path = os.path.join(ENCRYPTED_DIR, file_info["path"])
     if not os.path.isfile(encrypted_file_path):
         print("Encrypted file not found. Please try again.")
-        return
+        sys.exit(1)
     salt = bytes.fromhex(file_info["salt"])
     original_name = file_info["original_name"]
     password = getpass.getpass("Enter the password for decryption: ")
