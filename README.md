@@ -148,4 +148,4 @@ This project is licensed under the MIT License.
 
 # Author
 
-Developed by Pruthvish.
+Developed by Pruthvish S Kulkarni.
