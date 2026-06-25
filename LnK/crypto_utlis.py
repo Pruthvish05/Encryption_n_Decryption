@@ -68,6 +68,7 @@ def encryption(file_path):
     registry = load_registry()
     registry[os.path.basename(encrypted_file_path)] = {
         "original_name": file_name,
+        "original_path": os.path.abspath(file_path),
         "path": os.path.basename(encrypted_file_path),
         "salt": salt.hex(),
         "timestamp": time.time()
@@ -141,7 +142,7 @@ def decryption(file_path=None):
     password = getpass.getpass("Enter the password for decryption: ")
     if not password:
         print("Password cannot be empty. Decryption cancelled.")
-        return
+        sys.exit(1)
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
@@ -157,16 +158,16 @@ def decryption(file_path=None):
         decrypted_data = fernet.decrypt(encrypted_data)
     except InvalidToken:
         print("Invalid password. Decryption failed.")
-        return
+        sys.exit(1)
     except OSError as e:
         print(f"Error reading encrypted file: {e}")
-        return
-    output_file_path = os.path.join(DECRYPTED_DIR, original_name)
+        sys.exit(1)
+    output_file_path = file_info["original_path"]
     if os.path.exists(output_file_path):
         overwrite = input(f"{output_file_path} already exists. Do you want to overwrite it? (yes/no): ").lower()
         if overwrite != "yes":
             print("Decryption cancelled.")
-            return
+            sys.exit(1)
     os.makedirs(DECRYPTED_DIR, exist_ok=True)
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decrypted_data)
