@@ -13,7 +13,6 @@ from registry_utils import load_registry
 from registry_utils import save_registry
 from config import ENCRYPTED_DIR, DECRYPTED_DIR, REGISTRY_FILE
 from file_utils import ensure_directories
-
 def derive_key(password, salt):
     password_bytes = password.encode()
     kdf = PBKDF2HMAC(
@@ -24,22 +23,22 @@ def derive_key(password, salt):
     )
     key = kdf.derive(password_bytes)
     return base64.urlsafe_b64encode(key)
-
-ensure_directories()
-
 def encryption(file_path):
-    # file_path = input("Enter the file path to encrypt: ")
+    print("DEBUG file_path:", file_path)
+    print("DEBUG cwd:", os.getcwd())
+    print("DEBUG absolute:", os.path.abspath(file_path))
+    print("DEBUG exists:", os.path.isfile(file_path))
     if not os.path.isfile(file_path):
         print("File does not exist. Please try again.")
         sys.exit(1)
     file_name = os.path.basename(file_path)
-    with open(file_path, 'rb') as file:
+    with open(file_path, "rb") as file:
         data = file.read()
-    print("file loaded successfully")
-    print(f"File-name: {file_name}")
-    print(f"File-size: {len(data)} bytes")
+    print(f"Encrypting file: {file_name}")
     while True:
-        password = getpass.getpass("Enter a strong password for encryption(1upper, 1lower, 1digit): ")
+        password = getpass.getpass(
+            "Enter a strong password for encryption(1upper, 1lower, 1digit): "
+        )
         confirm = getpass.getpass("Confirm password: ")
         if not validate_password(password):
             continue
@@ -48,21 +47,14 @@ def encryption(file_path):
             continue
         break
     # time.sleep(1)
-    password_bytes = password.encode()
-    salt= os.urandom(16)
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=500000,
-    )
+    salt = os.urandom(16)
     print("Encryption key derived successfully")
     fernet_key = derive_key(password, salt)
     fernet = Fernet(fernet_key)
     encrypted_data = fernet.encrypt(data)
     encrypted_name = f"{file_name}_{uuid.uuid4().hex[:8]}.enc"
     encrypted_file_path = os.path.join(ENCRYPTED_DIR, encrypted_name)
-    with open(encrypted_file_path, 'wb') as encrypted_file:
+    with open(encrypted_file_path, "wb") as encrypted_file:
         encrypted_file.write(encrypted_data)
     registry = load_registry()
     registry[os.path.basename(encrypted_file_path)] = {
@@ -70,23 +62,21 @@ def encryption(file_path):
         "original_path": os.path.abspath(file_path),
         "path": os.path.basename(encrypted_file_path),
         "salt": salt.hex(),
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
     save_registry(registry)
-    # print("----------------------------------------")
-    # print(registry)
-    # print("----------------------------------------")
     print(f"Encrypted -> {encrypted_file_path}")
-    delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
+    delete_original = input(
+        "Do you want to delete the original file? (yes/no): "
+    ).lower()
     if delete_original == "yes":
         os.remove(file_path)
         print("Original file deleted.")
         sys.exit(0)
 
+
 def decryption(file_path=None):
     print("Decryption selected")
-    # Here we would add our decryption code
-    #now we will
     if file_path is None:
         print("Please provide a file path for decryption.")
         return
@@ -94,44 +84,17 @@ def decryption(file_path=None):
         print("No encrypted files found. Please encrypt a file first.")
         return
     registry = load_registry()
-    # print("Available encrypted files:")
-    # selected_file = os.path.basename(file_path)
-    # if selected_file not in registry:
-    #     print("File not found in registry. Please try again.")
-    #     return
-    #had to comment the above code due to UX reasons
     requested_file = os.path.basename(file_path)
     print(f"Requested file for decryption: {requested_file}")
     matches = []
     for key, value in registry.items():
-        print(f"Checking: {value['original_name']}")
         if value["original_name"] == requested_file:
-            print("MATCH FOUND")
             matches.append(value)
     if not matches:
         print("File not found in registry.")
         sys.exit(1)
-    
-    # for _, value in registry.items():
-    #     if value["original_name"] == requested_file:
-    #         matches.append(value)
-    #     if not matches:
-    #         print("File not found in registry.")
-    #         return
     matching_entry = max(matches,key=lambda x: x.get("timestamp", 0))
-    # try:
-    #     choice = int(input("Enter the number of the file you want to decrypt: "))
-    #     keys = list(registry.keys())
-    #     if choice < 1 or choice > len(keys):
-    #         print("Invalid choice. Please try again.")
-    #         return
-    # except ValueError:
-    #     print("Invalid input. Please enter a number.")
-    #     return
-    #selected_file = keys[choice - 1]
     file_info = matching_entry
-    # print("DEBUG TYPE:", type(file_info))
-    # print("DEBUG VALUE:", file_info)
     encrypted_file_path = os.path.join(ENCRYPTED_DIR, file_info["path"])
     if not os.path.isfile(encrypted_file_path):
         print("Encrypted file not found. Please try again.")
@@ -142,16 +105,10 @@ def decryption(file_path=None):
     if not password:
         print("Password cannot be empty. Decryption cancelled.")
         sys.exit(1)
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=500000,
-    )
     fernet_key = derive_key(password, salt)
     fernet = Fernet(fernet_key)
     try:
-        with open(encrypted_file_path, 'rb') as f:
+        with open(encrypted_file_path, "rb") as f:
             encrypted_data = f.read()
         decrypted_data = fernet.decrypt(encrypted_data)
     except InvalidToken:
@@ -163,18 +120,24 @@ def decryption(file_path=None):
     output_file_path = file_info["original_path"]
     original_dir = os.path.dirname(output_file_path)
     if not os.path.exists(original_dir):
-        print(f"Original directory {original_dir} does not exist. Saving decrypted file to {DECRYPTED_DIR}.")
+        print(
+            f"Original directory {original_dir} does not exist. Saving decrypted file to {DECRYPTED_DIR}."
+        )
         output_file_path = os.path.join(DECRYPTED_DIR, original_name)
     if os.path.exists(output_file_path):
-        overwrite = input(f"{output_file_path} already exists. Do you want to overwrite it? (yes/no): ").lower()
+        overwrite = input(
+            f"{output_file_path} already exists. Do you want to overwrite it? (yes/no): "
+        ).lower()
         if overwrite != "yes":
             print("Decryption cancelled.")
             sys.exit(1)
     os.makedirs(DECRYPTED_DIR, exist_ok=True)
-    with open(output_file_path, 'wb') as output_file:
+    with open(output_file_path, "wb") as output_file:
         output_file.write(decrypted_data)
     print(f"Decrypted -> {output_file_path}")
-    delete_encrypted = input("Do you want to delete the encrypted file? (yes/no): ").lower()
+    delete_encrypted = input(
+        "delete encrypted file? (yes/no): "
+    ).lower()
     if delete_encrypted == "yes":
         os.remove(encrypted_file_path)
         print(f"Encrypted file deleted: {encrypted_file_path}")
