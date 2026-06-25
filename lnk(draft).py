@@ -114,6 +114,8 @@ def encryption(file_path):
     delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
     if delete_original == "yes":
         os.remove(file_path)
+        print("DEBUG TYPE:", type(file_info))
+    print("DEBUG VALUE:", file_info)
         print("Original file deleted.")
     # if not os.path.isfile("encrypted_files/registry.json"):
     #     with open("encrypted_files/registry.json", 'w') as registry_file:
