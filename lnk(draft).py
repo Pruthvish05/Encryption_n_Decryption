@@ -1,0 +1,269 @@
+import os
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.fernet import Fernet
+import base64
+import json
+import getpass
+import time
+import re
+import argparse
+from cryptography.fernet import InvalidToken
+import sys
+import uuid
+REGISTRY_FILE = "encrypted_files/registry.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENCRYPTED_DIR = os.path.join(BASE_DIR, "encrypted_files")
+DECRYPTED_DIR = os.path.join(BASE_DIR, "decrypted_files")
+REGISTRY_FILE = os.path.join(ENCRYPTED_DIR, "registry.json")
+#just a simple CLI menu
+#not simple anymore lol
+#need to add error handling and edge cases
+#need to add creating a folder for this and registry .json file
+def ensure_directories():
+    os.makedirs(ENCRYPTED_DIR, exist_ok=True)
+    os.makedirs(DECRYPTED_DIR, exist_ok=True)
+    os.makedirs(os.path.dirname(REGISTRY_FILE), exist_ok=True)
+
+def load_registry():
+    if not os.path.exists(REGISTRY_FILE):
+        return {}
+    try:
+        with open(REGISTRY_FILE, 'r', encoding='utf-8') as registry_file:
+            return json.load(registry_file)
+    except json.JSONDecodeError:
+        print("Registry file is corrupted.")
+        sys.exit(1)
+
+def save_registry(registry):
+    temp_registry_file = REGISTRY_FILE + ".tmp"
+    try:
+        with open(temp_registry_file, 'w', encoding='utf-8') as registry_file:
+            json.dump(registry, registry_file)
+        os.replace(temp_registry_file, REGISTRY_FILE)
+    except OSError as e:
+        print(f"Failed to save registry: {e}")
+        if os.path.exists(temp_registry_file):
+            os.remove(temp_registry_file)
+        sys.exit(1)
+def validate_password(password):
+        if len(password) < 8:
+            print("Password must be at least 8 characters long.")
+            return False
+        if not re.search(r"[A-Z]", password):
+            print("Password must contain at least one uppercase letter.")
+            return False
+        if not re.search(r"[a-z]", password):
+            print("Password must contain at least one lowercase letter.")
+            return False
+        if not re.search(r"\d", password):
+            print("Password must contain at least one digit.")
+            return False
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            print("Password must contain at least one special character.")
+            return False
+        return True
+
+
+def encryption(file_path):
+    # file_path = input("Enter the file path to encrypt: ")
+    if not os.path.isfile(file_path):
+        print("File does not exist. Please try again.")
+        sys.exit(1)
+    file_name = os.path.basename(file_path)
+    with open(file_path, 'rb') as file:
+        data = file.read()
+    print(f"file loaded successfully")
+    print(f"File-name: {file_name}")
+    print(f"File-size: {len(data)} bytes")
+    while True:
+        password = getpass.getpass("Enter a strong password for encryption: ")
+        confirm = getpass.getpass("Confirm password: ")
+        if not validate_password(password):
+            continue
+        if confirm != password:
+            print("Passwords do not match. Please try again.")
+            continue
+        break
+    # time.sleep(1)
+    password_bytes = password.encode()
+    salt= os.urandom(16)
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=500000,
+    )
+    key = kdf.derive(password_bytes)
+    print(f"Encryption key derived successfully")
+    fernet_key = base64.urlsafe_b64encode(key)
+    fernet = Fernet(fernet_key)
+    encrypted_data = fernet.encrypt(data)
+    encrypted_name = f"{file_name}_{uuid.uuid4().hex[:8]}.enc"
+    encrypted_file_path = os.path.join(ENCRYPTED_DIR, encrypted_name)
+    with open(encrypted_file_path, 'wb') as encrypted_file:
+        encrypted_file.write(encrypted_data)
+    registry = load_registry()
+    registry[os.path.basename(encrypted_file_path)] = {
+        "original_name": file_name,
+        "path": os.path.basename(encrypted_file_path),
+        "salt": salt.hex(),
+    }
+    save_registry(registry)
+    print(f"Encrypted -> {encrypted_file_path}")
+    delete_original = input("Do you want to delete the original file? (yes/no): ").lower()
+    if delete_original == "yes":
+        os.remove(file_path)
+        print("Original file deleted.")
+    # if not os.path.isfile("encrypted_files/registry.json"):
+    #     with open("encrypted_files/registry.json", 'w') as registry_file:
+    #         json.dump({}, registry_file)
+    # with open("encrypted_files/registry.json", 'r') as registry_file:
+    #     registry = json.load(registry_file)
+    # registry[file_name] = {
+    #     "path": encrypted_file_path,
+    #     "salt": salt.hex(),
+    #     "key": key.hex()
+    # }
+    # with open("encrypted_files/registry.json", 'w') as registry_file:
+    #     json.dump(registry, registry_file)
+def decryption(file_path=None):
+    print("Decryption selected")
+    # Here we would add our decryption code
+    #now we will
+    if file_path is None:
+        print("Please provide a file path for decryption.")
+        return
+    if not os.path.isfile(REGISTRY_FILE):
+        print("No encrypted files found. Please encrypt a file first.")
+        return
+    registry = load_registry()
+    print(registry)
+    # print("Available encrypted files:")
+    requested_file = os.path.basename(file_path)
+    matching_entry= None
+    for encrypted_name, file_info in registry.items():
+        print(type(file_info))
+        print(file_info)
+        if file_info["original_name"] == requested_file:
+            matching_entry = file_info
+            break
+    if matching_entry is None:
+        print("File not found in registry. Please try again.")
+        return
+    # try:
+    #     choice = int(input("Enter the number of the file you want to decrypt: "))
+    #     keys = list(registry.keys())
+    #     if choice < 1 or choice > len(keys):
+    #         print("Invalid choice. Please try again.")
+    #         return
+    # except ValueError:
+    #     print("Invalid input. Please enter a number.")
+    #     return
+    #selected_file = keys[choice - 1]
+    file_info = matching_entry
+    encrypted_file_path = os.path.join(ENCRYPTED_DIR, file_info["path"])
+    salt = bytes.fromhex(file_info["salt"])
+    original_name = file_info["original_name"]
+    password = getpass.getpass("Enter the password for decryption: ")
+    if not password:
+        print("Password cannot be empty. Decryption cancelled.")
+        return
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=500000,
+    )
+    key = kdf.derive(password.encode())
+    fernet_key = base64.urlsafe_b64encode(key)
+    fernet = Fernet(fernet_key)
+    try:
+        with open(encrypted_file_path, 'rb') as f:
+            encrypted_data = f.read()
+        decrypted_data = fernet.decrypt(encrypted_data)
+    except InvalidToken:
+        print("Invalid password. Decryption failed.")
+        return
+    except OSError as e:
+        print(f"Error reading encrypted file: {e}")
+        return
+    output_file_path = os.path.join(DECRYPTED_DIR, original_name)
+    if os.path.exists(output_file_path):
+        overwrite = input(f"{output_file_path} already exists. Do you want to overwrite it? (yes/no): ").lower()
+        if overwrite != "yes":
+            print("Decryption cancelled.")
+            return
+    os.makedirs(DECRYPTED_DIR, exist_ok=True)
+    with open(output_file_path, 'wb') as output_file:
+        output_file.write(decrypted_data)
+    print(f"Decrypted -> {output_file_path}")
+    #print(f"\nFile decrypted successfully and saved to {output_file_path}")
+#we have a new function it is 
+#COMPRESS
+#had to stop this got confused this
+#surely will be an update in the near future.
+# def compress(data):
+#     compressed_data = zlib.compress(data)
+#     if len(compressed_data) < len(data):
+#         return compressed_data
+#     else:
+#         return data
+
+# def decompress(data,compressed_data):
+#     try:
+#         decompressed_data = zlib.decompress(compressed_data)
+#         return decompressed_data
+#     except zlib.error:
+#         print("Decompression failed. Data may not be compressed.")
+#         return data
+
+# we do not use menu as this will be 
+# used as a command line tool with arguments for encryption and decryption and compression
+# def menu():
+#     while True:
+#         print("Welcome to the Encryption/Decryption Tool")
+#         print("1. Encrypt a file")
+#         print("2. Decrypt a file")
+#         print("3. Exit")
+#         choice = input("Enter your choice: ")
+#         if choice == "1":
+#             encryption()
+#         elif choice == "2":
+#             decryption()
+#         elif choice == "3":
+#             print("Exiting...")
+#             time.sleep(2)
+#             os._exit(0)
+#         else:
+#             print("Invalid choice. Please try again.")
+#             time.sleep(1)
+#             os._exit(0)
+
+def main():
+    parser = argparse.ArgumentParser(prog = "lnk", description="LockNKey secure file encryption and decryption tool")
+    parser.add_argument("mode", choices=['encrypt', 'decrypt'], help='Mode of operation: encrypt or decrypt')
+    parser.add_argument("file", help="Path to the file to encrypt/decrypt", nargs='?', default=None)
+    args = parser.parse_args()
+    ensure_directories()
+    if args.file is None:
+        print("Please provide a file path for encryption/decryption.")
+        sys.exit(1)
+    
+    if not os.path.isfile(args.file):
+        print("File does not exist. Please try again.")
+        sys.exit(1)
+    if args.mode == 'encrypt':
+        encryption(args.file)
+    elif args.mode == 'decrypt':
+        decryption(args.file)
+    else:
+        if args.file is None:
+            print("Please provide a file path for encryption/decryption.")
+            sys.exit(1)
+        print("Invalid mode. Please choose 'encrypt' or 'decrypt'.")
+        time.sleep(1)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
